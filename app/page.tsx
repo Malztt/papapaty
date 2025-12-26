@@ -78,7 +78,7 @@ function shuffleArray<T>(array: T[]): T[] {
   const newArray = [...array]
   for (let i = newArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[newArray[i], newArray[j]] = [newArray[j], newArray[i]]
+      ;[newArray[i], newArray[j]] = [newArray[j], newArray[i]]
   }
   return newArray
 }
@@ -142,11 +142,15 @@ export default function ChristmasPartyGame() {
     if (phase === 3) return
 
     if (activePlayerCount > 8) {
-      setPhase(1)
-      setQuestionModalOpen(false)
-      setCurrentMathRule(null)
+      if (phase !== 1) {
+        setPhase(1)
+        setQuestionModalOpen(false)
+        setCurrentMathRule(null)
+      }
     } else if (activePlayerCount >= 4 && activePlayerCount <= 8) {
-      setPhase(2)
+      if (phase !== 2) {
+        setPhase(2)
+      }
     }
     // Removed automatic Phase 3 transition
   }, [activePlayerCount, phase])
@@ -182,12 +186,13 @@ export default function ChristmasPartyGame() {
     setEliminatedPlayers(victimIds)
     setModalMessage(`ผู้โชคร้าย:\n\nหมายเลข ${victimIds.join(", ")} ตกรอบ!`)
     setResultModalOpen(true)
+  }
 
-    setTimeout(() => {
-      setPlayers((prev) => prev.map((p) => (victimIds.includes(p.id) ? { ...p, status: "eliminated" } : p)))
-      setEliminatedPlayers([])
-      setCurrentMathRule(null)
-    }, 2000)
+  const handleCloseResultModal = () => {
+    setPlayers((prev) => prev.map((p) => (eliminatedPlayers.includes(p.id) ? { ...p, status: "eliminated" } : p)))
+    setEliminatedPlayers([])
+    setCurrentMathRule(null)
+    setResultModalOpen(false)
   }
 
   const openGiftBox = (playerId: number) => {
@@ -209,11 +214,11 @@ export default function ChristmasPartyGame() {
       prev.map((p) =>
         p.id === selectedPlayer
           ? {
-              ...p,
-              status: passed ? "safe" : "eliminated",
-              phase2Status: "opened",
-              phase2Result: passed ? "pass" : "fail",
-            }
+            ...p,
+            status: passed ? "safe" : "eliminated",
+            phase2Status: "opened",
+            phase2Result: passed ? "pass" : "fail",
+          }
           : p,
       ),
     )
@@ -344,13 +349,12 @@ export default function ChristmasPartyGame() {
               {players.map((player) => (
                 <div
                   key={player.id}
-                  className={`aspect-square flex items-center justify-center text-2xl font-bold rounded-lg border-4 transition-all ${
-                    player.status === "eliminated"
+                  className={`aspect-square flex items-center justify-center text-2xl font-bold rounded-lg border-4 transition-all ${player.status === "eliminated"
                       ? "bg-red-600 text-white border-red-900"
                       : eliminatedPlayers.includes(player.id)
                         ? "bg-red-500 text-white border-red-700 animate-pulse"
                         : "bg-white text-[#0B4619] border-[#FFD700] hover:scale-110"
-                  }`}
+                    }`}
                 >
                   {player.id}
                 </div>
@@ -383,15 +387,14 @@ export default function ChristmasPartyGame() {
                   key={player.id}
                   onClick={() => player.phase2Status === "pending" && openGiftBox(player.id)}
                   disabled={player.phase2Status === "opened"}
-                  className={`aspect-square flex flex-col items-center justify-center text-3xl font-bold rounded-lg border-4 transition-all relative ${
-                    player.phase2Status === "opened" && player.phase2Result === "fail"
+                  className={`aspect-square flex flex-col items-center justify-center text-3xl font-bold rounded-lg border-4 transition-all relative ${player.phase2Status === "opened" && player.phase2Result === "fail"
                       ? "bg-red-600 text-white border-red-900 cursor-not-allowed"
                       : player.phase2Status === "opened" && player.phase2Result === "pass"
                         ? "bg-green-600 text-white border-green-900 cursor-not-allowed"
                         : flippingCard === player.id
                           ? "bg-[#FFD700] text-[#8B0000] border-[#0B4619] animate-pulse"
                           : "bg-[#FFD700] text-[#8B0000] border-[#0B4619] hover:scale-105 cursor-pointer"
-                  }`}
+                    }`}
                   style={{
                     transform: flippingCard === player.id ? "rotateY(180deg)" : "rotateY(0deg)",
                     transition: "transform 0.6s",
@@ -414,28 +417,26 @@ export default function ChristmasPartyGame() {
             </div>
 
             <div
-              className={`grid gap-6 max-w-6xl mx-auto ${
-                phase3Cards.length <= 3
+              className={`grid gap-6 max-w-6xl mx-auto ${phase3Cards.length <= 3
                   ? "grid-cols-3"
                   : phase3Cards.length === 4
                     ? "grid-cols-4"
                     : phase3Cards.length === 5
                       ? "grid-cols-5"
                       : "grid-cols-4 md:grid-cols-5 lg:grid-cols-6"
-              }`}
+                }`}
             >
               {phase3Cards.map((card) => (
                 <button
                   key={card.id}
                   onClick={() => !card.revealed && pickFinalCard(card.id)}
                   disabled={card.revealed}
-                  className={`aspect-[3/4] flex flex-col items-center justify-center text-5xl font-bold rounded-xl border-8 transition-all shadow-2xl ${
-                    card.revealed
+                  className={`aspect-[3/4] flex flex-col items-center justify-center text-5xl font-bold rounded-xl border-8 transition-all shadow-2xl ${card.revealed
                       ? card.isWinner
                         ? "bg-gradient-to-br from-green-500 to-green-700 border-[#FFD700]"
                         : "bg-gradient-to-br from-red-600 to-red-800 border-red-900"
                       : "bg-gradient-to-br from-[#FFD700] to-[#FFA500] border-white hover:scale-105 cursor-pointer"
-                  }`}
+                    }`}
                 >
                   {card.revealed ? (
                     <>
@@ -474,7 +475,7 @@ export default function ChristmasPartyGame() {
             <Card className="bg-[#8B0000] border-4 border-[#FFD700] p-12 max-w-2xl w-full">
               <div className="text-white text-3xl whitespace-pre-line mb-8 text-center font-bold">{modalMessage}</div>
               <Button
-                onClick={() => setResultModalOpen(false)}
+                onClick={handleCloseResultModal}
                 className="w-full h-20 bg-[#0B4619] hover:bg-[#0d5a20] text-[#FFD700] font-bold text-3xl border-4 border-[#FFD700]"
               >
                 ตกลง (OK)
