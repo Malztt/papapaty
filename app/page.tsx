@@ -85,7 +85,7 @@ function shuffleArray<T>(array: T[]): T[] {
 
 export default function ChristmasPartyGame() {
   const [gameStarted, setGameStarted] = useState(false)
-  const [playerInput, setPlayerInput] = useState("20")
+  const [playerInput, setPlayerInput] = useState("")
   const [players, setPlayers] = useState<Player[]>([])
   const [phase, setPhase] = useState<Phase>(1)
 
@@ -322,6 +322,7 @@ export default function ChristmasPartyGame() {
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
+                placeholder="ระบุจำนวน"
                 value={playerInput}
                 onChange={(e) => {
                   const val = e.target.value
@@ -329,7 +330,7 @@ export default function ChristmasPartyGame() {
                     setPlayerInput(val)
                   }
                 }}
-                className="bg-white text-black border-4 border-[#FFD700] text-5xl p-8 text-center font-bold"
+                className="bg-white text-black border-4 border-[#FFD700] text-5xl p-8 text-center font-bold placeholder:text-gray-300"
               />
             </div>
             <Button
@@ -352,8 +353,7 @@ export default function ChristmasPartyGame() {
       >
         <div className="text-center">
           <div className="text-8xl mb-8 animate-bounce">🎉</div>
-          <h1 className="text-9xl font-bold text-[#FFD700] mb-8">คุณคือผู้ชนะ</h1>
-          <div className="text-4xl text-[#FFD700]">🎄 ยินดีด้วย! 🎄</div>
+          <h1 className="text-[10rem] font-bold text-[#FFD700] mb-0 leading-tight drop-shadow-2xl">คุณคือผู้ชนะ</h1>
         </div>
       </div>
     )
