@@ -277,9 +277,16 @@ export default function ChristmasPartyGame() {
         className="min-h-screen flex items-center justify-center p-4"
         style={{ background: "linear-gradient(135deg, #0F1729 0%, #1a2332 100%)" }}
       >
-        <Card className="p-12 max-w-2xl w-full bg-[#8B0000] border-4 border-[#FFD700]">
-          <h1 className="text-5xl font-bold text-center mb-6 text-[#FFD700]">THE CHOSEN ONE</h1>
-          <h2 className="text-3xl font-semibold text-center mb-12 text-white">ศึกชิงรางวัลซานต้า</h2>
+        <Card className="px-12 pb-12 pt-2 max-w-2xl w-full bg-[#8B0000] border-4 border-[#FFD700]">
+          <div className="flex justify-center -mb-28">
+            <img
+              src="/santa.png"
+              alt="Santa Mascot"
+              className="w-96 h-96 object-contain animate-wiggle drop-shadow-2xl"
+            />
+          </div>
+          <h1 className="text-5xl font-bold text-center mb-0 text-[#FFD700] relative z-10">THE CHOSEN ONE</h1>
+          <h2 className="text-3xl font-semibold text-center mb-6 text-white">ศึกชิงรางวัลซานต้า</h2>
           <div className="space-y-6">
             <div>
               <label className="block text-white mb-4 font-medium text-2xl text-center">จำนวนผู้เล่น:</label>
@@ -350,10 +357,10 @@ export default function ChristmasPartyGame() {
                 <div
                   key={player.id}
                   className={`aspect-square flex items-center justify-center text-2xl font-bold rounded-lg border-4 transition-all ${player.status === "eliminated"
-                      ? "bg-red-600 text-white border-red-900"
-                      : eliminatedPlayers.includes(player.id)
-                        ? "bg-red-500 text-white border-red-700 animate-pulse"
-                        : "bg-white text-[#0B4619] border-[#FFD700] hover:scale-110"
+                    ? "bg-red-600 text-white border-red-900"
+                    : eliminatedPlayers.includes(player.id)
+                      ? "bg-red-500 text-white border-red-700 animate-pulse"
+                      : "bg-white text-[#0B4619] border-[#FFD700] hover:scale-110"
                     }`}
                 >
                   {player.id}
@@ -388,12 +395,12 @@ export default function ChristmasPartyGame() {
                   onClick={() => player.phase2Status === "pending" && openGiftBox(player.id)}
                   disabled={player.phase2Status === "opened"}
                   className={`aspect-square flex flex-col items-center justify-center text-3xl font-bold rounded-lg border-4 transition-all relative ${player.phase2Status === "opened" && player.phase2Result === "fail"
-                      ? "bg-red-600 text-white border-red-900 cursor-not-allowed"
-                      : player.phase2Status === "opened" && player.phase2Result === "pass"
-                        ? "bg-green-600 text-white border-green-900 cursor-not-allowed"
-                        : flippingCard === player.id
-                          ? "bg-[#FFD700] text-[#8B0000] border-[#0B4619] animate-pulse"
-                          : "bg-[#FFD700] text-[#8B0000] border-[#0B4619] hover:scale-105 cursor-pointer"
+                    ? "bg-red-600 text-white border-red-900 cursor-not-allowed"
+                    : player.phase2Status === "opened" && player.phase2Result === "pass"
+                      ? "bg-green-600 text-white border-green-900 cursor-not-allowed"
+                      : flippingCard === player.id
+                        ? "bg-[#FFD700] text-[#8B0000] border-[#0B4619] animate-pulse"
+                        : "bg-[#FFD700] text-[#8B0000] border-[#0B4619] hover:scale-105 cursor-pointer"
                     }`}
                   style={{
                     transform: flippingCard === player.id ? "rotateY(180deg)" : "rotateY(0deg)",
@@ -418,12 +425,12 @@ export default function ChristmasPartyGame() {
 
             <div
               className={`grid gap-6 max-w-6xl mx-auto ${phase3Cards.length <= 3
-                  ? "grid-cols-3"
-                  : phase3Cards.length === 4
-                    ? "grid-cols-4"
-                    : phase3Cards.length === 5
-                      ? "grid-cols-5"
-                      : "grid-cols-4 md:grid-cols-5 lg:grid-cols-6"
+                ? "grid-cols-3"
+                : phase3Cards.length === 4
+                  ? "grid-cols-4"
+                  : phase3Cards.length === 5
+                    ? "grid-cols-5"
+                    : "grid-cols-4 md:grid-cols-5 lg:grid-cols-6"
                 }`}
             >
               {phase3Cards.map((card) => (
@@ -432,10 +439,10 @@ export default function ChristmasPartyGame() {
                   onClick={() => !card.revealed && pickFinalCard(card.id)}
                   disabled={card.revealed}
                   className={`aspect-[3/4] flex flex-col items-center justify-center text-5xl font-bold rounded-xl border-8 transition-all shadow-2xl ${card.revealed
-                      ? card.isWinner
-                        ? "bg-gradient-to-br from-green-500 to-green-700 border-[#FFD700]"
-                        : "bg-gradient-to-br from-red-600 to-red-800 border-red-900"
-                      : "bg-gradient-to-br from-[#FFD700] to-[#FFA500] border-white hover:scale-105 cursor-pointer"
+                    ? card.isWinner
+                      ? "bg-gradient-to-br from-green-500 to-green-700 border-[#FFD700]"
+                      : "bg-gradient-to-br from-red-600 to-red-800 border-red-900"
+                    : "bg-gradient-to-br from-[#FFD700] to-[#FFA500] border-white hover:scale-105 cursor-pointer"
                     }`}
                 >
                   {card.revealed ? (
