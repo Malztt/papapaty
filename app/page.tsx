@@ -27,7 +27,7 @@ interface MathRule {
 const generateMathRules = (): MathRule[] => {
   const endsWithDigit = Math.floor(Math.random() * 10)
   const sumTarget = Math.floor(Math.random() * 10) + 5 // Random sum from 5-14
-  const divisor = [3, 4, 5, 7][Math.floor(Math.random() * 4)]
+  const divisor = [7, 8, 9][Math.floor(Math.random() * 3)]
 
   return [
     {
@@ -85,7 +85,7 @@ function shuffleArray<T>(array: T[]): T[] {
 
 export default function ChristmasPartyGame() {
   const [gameStarted, setGameStarted] = useState(false)
-  const [totalPlayers, setTotalPlayers] = useState(20)
+  const [playerInput, setPlayerInput] = useState("20")
   const [players, setPlayers] = useState<Player[]>([])
   const [phase, setPhase] = useState<Phase>(1)
 
@@ -103,6 +103,9 @@ export default function ChristmasPartyGame() {
 
   const [phase3Cards, setPhase3Cards] = useState<Array<{ id: number; isWinner: boolean; revealed: boolean }>>([])
   const [winner, setWinner] = useState<number | null>(null)
+
+  // Track used Phase 1 rules to prevent duplicates
+  const [usedRules, setUsedRules] = useState<string[]>([])
 
   // Falling snow effect
   useEffect(() => {
@@ -125,7 +128,11 @@ export default function ChristmasPartyGame() {
   }, [])
 
   const startGame = () => {
-    const initialPlayers: Player[] = Array.from({ length: totalPlayers }, (_, i) => ({
+    let num = Number.parseInt(playerInput)
+    if (isNaN(num)) num = 20
+    const count = Math.max(3, num)
+
+    const initialPlayers: Player[] = Array.from({ length: count }, (_, i) => ({
       id: i + 1,
       status: "active",
       phase2Status: "pending",
@@ -133,6 +140,7 @@ export default function ChristmasPartyGame() {
     setPlayers(initialPlayers)
     setGameStarted(true)
     setPhase(1)
+    setUsedRules([]) // Reset used rules for new game
   }
 
   const activePlayers = players.filter((p) => p.status === "active")
@@ -156,10 +164,32 @@ export default function ChristmasPartyGame() {
   }, [activePlayerCount, phase])
 
   const showMathQuestion = () => {
-    const rules = generateMathRules()
-    const randomRule = rules[Math.floor(Math.random() * rules.length)]
-    setCurrentMathRule(randomRule)
-    setQuestionModalOpen(true)
+    let randomRule: MathRule | null = null
+    let attempts = 0
+    const maxAttempts = 50
+
+    while (attempts < maxAttempts) {
+      const rules = generateMathRules()
+      const candidate = rules[Math.floor(Math.random() * rules.length)]
+
+      if (!usedRules.includes(candidate.description)) {
+        randomRule = candidate
+        break
+      }
+      attempts++
+    }
+
+    if (randomRule) {
+      setCurrentMathRule(randomRule)
+      setUsedRules(prev => [...prev, randomRule!.description])
+      setQuestionModalOpen(true)
+    } else {
+      // Fallback: Just pick a random one if we run out (unlikely)
+      const rules = generateMathRules()
+      const fallback = rules[Math.floor(Math.random() * rules.length)]
+      setCurrentMathRule(fallback)
+      setQuestionModalOpen(true)
+    }
   }
 
   const revealVictims = () => {
@@ -167,10 +197,8 @@ export default function ChristmasPartyGame() {
 
     const matchingPlayers = activePlayers.filter((p) => currentMathRule.check(p.id))
 
-    let victimsToEliminate = matchingPlayers
-    if (matchingPlayers.length > 3) {
-      victimsToEliminate = shuffleArray(matchingPlayers).slice(0, 3)
-    }
+    // Removed limit: All matching players are eliminated
+    const victimsToEliminate = matchingPlayers
 
     // Close question modal
     setQuestionModalOpen(false)
@@ -291,10 +319,16 @@ export default function ChristmasPartyGame() {
             <div>
               <label className="block text-white mb-4 font-medium text-2xl text-center">จำนวนผู้เล่น:</label>
               <Input
-                type="number"
-                value={totalPlayers}
-                onChange={(e) => setTotalPlayers(Number.parseInt(e.target.value) || 1)}
-                min="3"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={playerInput}
+                onChange={(e) => {
+                  const val = e.target.value
+                  if (val === "" || /^\d+$/.test(val)) {
+                    setPlayerInput(val)
+                  }
+                }}
                 className="bg-white text-black border-4 border-[#FFD700] text-5xl p-8 text-center font-bold"
               />
             </div>
@@ -318,8 +352,7 @@ export default function ChristmasPartyGame() {
       >
         <div className="text-center">
           <div className="text-8xl mb-8 animate-bounce">🎉</div>
-          <h1 className="text-6xl font-bold text-[#FFD700] mb-4">ผู้ชนะคือ</h1>
-          <div className="text-9xl font-bold text-white mb-8">#{winner}</div>
+          <h1 className="text-9xl font-bold text-[#FFD700] mb-8">คุณคือผู้ชนะ</h1>
           <div className="text-4xl text-[#FFD700]">🎄 ยินดีด้วย! 🎄</div>
         </div>
       </div>
